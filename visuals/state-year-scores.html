@@ -1,0 +1,136 @@
+<html>
+   <head>
+      <style>
+         .orange-background {
+         background-color: orange;
+         }
+         .orchid-background {
+         background-color: orchid;
+         }
+         .beige-background {
+         background-color: beige;
+         }
+		 .light-blue{
+		 background-color: #D0E8FA;}
+      </style>
+      <title>HIA - All Housing Inspections</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"-->
+	   <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script-->
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
+     
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
+	  
+	     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <script type="text/javascript">
+         google.charts.load('current', {'packages':['table']});
+         google.charts.load('current', {'packages':['corechart']});
+         function drawChart(year,state) {
+               $.ajax({
+                   dataType: "json",
+                   url: 'http://localhost:3030/myDataset?query=SELECT+%3Fstate_name+%28COUNT%28%3Fs1%29+AS+%3Fmultifamily_count%29+%28COUNT%28%3Fs2%29+AS+%3FpublicHousing_count%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E+++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E+%0D%0AWHERE%7B+%0D%0A++%7B+%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name+FILTER+regex%28%3Fstate_name%2C+%22'+state+'%22%29++.++%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_date%3E+%3Finspection_date++%0D%0A++FILTER+regex%28%3Finspection_date%2C+%22'+year+'%22%29++%0D%0A++%7D+UNION++%0D%0A++++%7B+%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E%3Fstate_name+FILTER+regex%28%3Fstate_name%2C+%22'+state+'%22%29++.++%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_date%3E+%3Finspection_date++%0D%0A++FILTER+regex%28%3Finspection_date%2C+%22'+year+'%22%29++%0D%0A++%7D+%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate_name&output=json',
+               }).done(function ( json ) {
+                   var data = new google.visualization.DataTable();
+                   data.addColumn('string', 'Housing Type');
+                   data.addColumn('number', 'Count');
+         
+                   json.results.bindings.forEach(function(entry){
+                       data.addRow(['Public Housing', parseInt(entry.publicHousing_count.value)]);
+         data.addRow(['Multifamily Housing', parseInt(entry.multifamily_count.value)]);
+         
+                       var options = {'title':'Housing Inspection Score Distribution for '+state+' in Year '+year,
+                           'width':570,
+                           'height':300,'is3D':true, 'colors':['#4D4D4D','#5DA5DA']};
+         
+                       var chart = new google.visualization.PieChart(document.getElementById('query6_piechart'));
+                       chart.draw(data, options);
+                   });
+               });
+           }
+         
+         function drawTable() {
+         year = document.getElementById('year').value;
+          state = document.getElementById('state').value;
+         var cssClassNames = {
+         'headerRow': 'italic-darkblue-font large-font bold-font',
+         'tableRow': '',
+         'oddTableRow': 'light-blue',
+         'selectedTableRow': 'orange-background large-font',
+         'hoverTableRow': '',
+         'headerCell': 'gold-border',
+         'tableCell': '',
+         'rowNumberCell': 'underline-blue-font'};
+         $.ajax({
+                   dataType: "json",
+                   url:'http://localhost:3030/myDataset?query=SELECT+%3Fcity+%3Fcounty_name+%3Finspection_score+%3Finspection_date++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E+++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E+%0D%0AWHERE%7B+%0D%0A++%7B%0D%0A+++SELECT+%3Fstate_name+%3Finspection_score+%3Finspection_date+%28CONCAT%28UCASE%28SUBSTR%28%3Fcity_mc%2C+1%2C+1%29%29%2C+LCASE%28SUBSTR%28%3Fcity_mc%2C+2%29%29%29+as+%3Fcity%29+%28CONCAT%28UCASE%28SUBSTR%28%3Fcounty_name_mc%2C+1%2C+1%29%29%2C+LCASE%28SUBSTR%28%3Fcounty_name_mc%2C+2%29%29%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++%7B+%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name+FILTER+regex%28%3Fstate_name%2C+%22'+state+'%22%29++.%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.++%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.+%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_date%3E+%3Finspection_date++%0D%0A++FILTER+regex%28%3Finspection_date%2C+%22'+year+'%22%29++%0D%0A++%7D+UNION++%0D%0A++++%7B+%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E%3Fstate_name+FILTER+regex%28%3Fstate_name%2C+%22'+state+'%22%29++.++%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.++%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.+%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_date%3E+%3Finspection_date++%0D%0A++FILTER+regex%28%3Finspection_date%2C+%22'+year+'%22%29++%0D%0A++%7D+%0D%0A%7D+%0D%0A++%7D%0D%0A%7D&output=json',
+               }).done(function ( json ) {
+                   console.log("full JSON data from fuseki:");
+                   console.log(json);
+         
+                   console.log("individual data entries processed:");
+                   var data = new google.visualization.DataTable();
+         data.addColumn('string', 'City');
+         data.addColumn('string', 'County');
+           data.addColumn('number', 'Inspection Score');
+           data.addColumn('string', 'Inspection Date');
+         
+                   json.results.bindings.forEach(function(entry){
+                       data.addRow([entry.city.value,entry.county_name.value,
+         parseFloat(entry.inspection_score.value),entry.inspection_date.value]);
+         
+                        var table = new google.visualization.Table(document.getElementById('query6_table'));
+           table.draw(data, {showRowNumber: true, width: '100%', height: '100%',pageSize: 20,'allowHtml': true, 'cssClassNames': cssClassNames});
+                   });
+               });
+         drawChart(year,state);
+         }
+         
+      </script>
+   </head>
+   <body>
+      <div class="container-fluid">
+	  <div class="page-header">
+    <h1>Housing Inspections for State and Year</h1>
+<hr/>	
+  </div>
+      <div class="row">
+         <div class="col-sm-6" >
+           
+            <form class="form-horizontal" onsubmit="drawTable(); return false" >
+               <div class="form-group">
+                  <label class="control-label col-sm-2" for="year">Year</label>
+                  <div class="col-sm-4">
+                     <input type="text" class="form-control" id="year" placeholder="Year [Ex:2004]" name="year">
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="control-label col-sm-2" for="pwd">State</label>
+                  <div class="col-sm-4">          
+                     <input type="text" class="form-control" id="state" placeholder="State Code [Ex:TX]" name="state">
+                  </div>
+               </div>
+               <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-2">
+                     <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+               </div>
+            </form>
+         </div>
+         <div class="col-sm-6" >
+            <div id="query6_piechart"></div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-12" >
+            <div id="query6_table">
+            </div>
+         </div>
+      </div>
+   </body>
+</html>

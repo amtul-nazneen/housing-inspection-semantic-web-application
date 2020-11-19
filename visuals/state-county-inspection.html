@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Load the AJAX API-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', { 'packages': ['corechart'] });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    var currentState;
+    var currentCounty;
+
+    function drawChart() {
+        $.when(
+            $.ajax({
+                dataType: "json",
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B+%0D%0A++++%7B%0D%0A++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.%0D%0A++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.+%0D%0A++++%7D%0D%0A++++UNION%0D%0A++++%7B%0D%0A++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.%0D%0A++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.+%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A++++%23+FILTER+REGEX%28%3Fstate%2C+%22CA%7CTX%7CNY%22%29+%23+use+to+filter+states+%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate%0D%0AORDER+BY+%3Fstate%0D%0A&output=json',
+            }),
+            $.ajax({
+                dataType: "json",
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%3Fcounty+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty%29+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%3Finspection_score%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate+%3Fcounty%0D%0AORDER+BY+%3Fstate+%3Fcounty&output=json',
+            }),
+            $.ajax({
+                dataType: "json",
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%3Fcounty+%3Fcity+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty%29+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%3Finspection_score%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate+%3Fcounty+%3Fcity%0D%0AORDER+BY+%3Fstate+%3Fcounty+%3Fcity&output=json'
+            }),
+            $.ajax({
+                dataType: "json",
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%3Fcounty+%3Fcity+%3Fproperty+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29+%28MAX%28%3Finspection_date%29+AS+%3Fdate%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty%29+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fproperty_name_mc%29+as+%3Fproperty%29+%3Finspection_date+%3Finspection_score%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fproperty_name%3E+%3Fproperty_name_mc.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_date%3E+%3Finspection_date.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fproperty_name%3E+%3Fproperty_name_mc.+%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_date%3E+%3Finspection_date.+%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate+%3Fcounty+%3Fcity+%3Fproperty%0D%0AORDER+BY+%3Fstate+%3Fcounty+%3Fcity+%3Fproperty&output=json'
+            })
+        ).then(function(json, jsonCounty, jsonCity, jsonProperty) {
+
+            // object used to monitor chart state
+            var chartState = { state: true, county: false, city: false, property: false };
+
+            // create datatables
+            var columnChartData = new google.visualization.DataTable();
+            columnChartData.addColumn('string', 'Key');
+            columnChartData.addColumn('number', 'Value');
+            var dataState = new google.visualization.DataTable();
+            dataState.addColumn('string', 'State');
+            dataState.addColumn('number', 'Value');
+            var dataCounty = new google.visualization.DataTable();
+            dataCounty.addColumn('string', 'State');
+            dataCounty.addColumn('string', 'County');
+            dataCounty.addColumn('number', 'Value');
+            var dataCity = new google.visualization.DataTable();
+            dataCity.addColumn('string', 'State');
+            dataCity.addColumn('string', 'County');
+            dataCity.addColumn('string', 'City');
+            dataCity.addColumn('number', 'Value');
+            var dataProperty = new google.visualization.DataTable();
+            dataProperty.addColumn('string', 'State');
+            dataProperty.addColumn('string', 'County');
+            dataProperty.addColumn('string', 'City');
+            dataProperty.addColumn('string', 'Property');
+            dataProperty.addColumn('number', 'Value');
+            dataProperty.addColumn({ type: 'string', role: "tooltip" });
+
+            // add rows to datatable
+            json[0].results.bindings.forEach(function(entry) {
+                columnChartData.addRow([entry.state.value, parseFloat(entry.score.value)]);
+            });
+
+            json[0].results.bindings.forEach(function(entry) {
+                dataState.addRow([entry.state.value, parseFloat(entry.score.value)]);
+            });
+
+            jsonCounty[0].results.bindings.forEach(function(entry) {
+                dataCounty.addRow([entry.state.value, entry.county.value, parseFloat(entry.score.value)]);
+            });
+
+            jsonCity[0].results.bindings.forEach(function(entry) {
+                dataCity.addRow([entry.state.value, entry.county.value, entry.city.value, parseFloat(entry.score.value)]);
+            });
+
+            jsonProperty[0].results.bindings.forEach(function(entry) {
+                var lastInspectionDate = new Date(entry.date.value);
+                var nextInspectionDate = (lastInspectionDate.getFullYear() + 10) + "/" + lastInspectionDate.getMonth() + "/" + lastInspectionDate.getDate();
+                dataProperty.addRow([entry.state.value, entry.county.value, entry.city.value, entry.property.value, parseFloat(entry.score.value), "Property: " + entry.property.value + '\n' + "Score: " + entry.score.value + '\n' + "Next Inspection Date: " + nextInspectionDate]);
+            });
+
+            var viewState = new google.visualization.DataView(dataState);
+            var viewCounty = new google.visualization.DataView(dataCounty);
+            var viewCity = new google.visualization.DataView(dataCity);
+            var viewProperty = new google.visualization.DataView(dataProperty);
+
+            // create chart
+            var chart = new google.visualization.ChartWrapper({
+                chartType: 'ColumnChart',
+                dataTable: viewState,
+                options: {
+                    title: "States - > Counties -> Cities -> Properties",
+                    legend: { position: 'none'},
+                    hAxis: { textStyle: { fontSize: 12} },
+                    chartArea: {width: '90%', height: '80%' },
+                },
+                containerId: 'chart_div'
+            });
+
+            // add event listeners
+            google.visualization.events.addListener(chart, 'select', selectHandler2);
+            document.getElementById("drillup_button").addEventListener("click", drillup2);
+
+            // draw chart
+            chart.draw();
+
+            function selectHandler2() {
+                if (chart.getChart().getSelection().length > 0) {
+                    var selection;
+
+                    if (chartState.state) { // if user clicks on a state
+                        chartState.state = false;
+                        chartState.county = true;
+                        chartState.city = false;
+                        chartState.property = false;
+
+                        // get selection
+                        selection = viewState.getFormattedValue(chart.getChart().getSelection()[0].row, 0);
+                        console.log(selection);
+
+                        // filter view
+                        viewCounty.setRows(dataCounty.getFilteredRows([{ column: 0, value: selection }]));
+                        viewCounty.setColumns([1, 2]);
+
+                        // change charge's data
+                        chart.setDataTable(viewCounty);
+
+                    } else if (chartState.county) { // if user clicks on a state
+                        chartState.state = false;
+                        chartState.county = false;
+                        chartState.city = true;
+                        chartState.property = false;
+
+                        // get selection
+                        viewCounty.setColumns([0, 1, 2]);
+                        selection = viewCounty.getFormattedValue(chart.getChart().getSelection()[0].row, 1);
+                        viewCounty.setColumns([1, 2]);
+                        console.log(selection);
+
+                        // filter view
+                        viewCity.setRows(dataCity.getFilteredRows([{ column: 1, value: selection }]));
+                        viewCity.setColumns([2, 3]);
+
+                        // change charge's data
+                        chart.setDataTable(viewCity);
+
+                    } else if (chartState.city) { // if user clicks on a state
+                        chartState.state = false;
+                        chartState.county = false;
+                        chartState.city = false;
+                        chartState.property = true;
+
+                        // get selection
+                        viewCity.setColumns([0, 1, 2, 3]);
+                        selection = viewCity.getFormattedValue(chart.getChart().getSelection()[0].row, 1);
+                        viewCity.setColumns([2, 3]);
+                        console.log(selection);
+
+                        // filter view
+                        viewProperty.setRows(dataProperty.getFilteredRows([{ column: 2, value: selection }]));
+                        viewProperty.setColumns([3, 4, 5]);
+
+                        // change charge's data
+                        chart.setDataTable(viewProperty);
+
+                    }
+                    // redraw chart
+                    chart.draw();
+                }
+            }
+
+            function drillup2() {
+                if (chartState.county) {
+                    chartState.state = true;
+                    chartState.county = false;
+                    chartState.city = false;
+                    chartState.property = false;
+
+                    // change charge's data and redraw
+                    chart.setDataTable(viewState);
+                    chart.draw();
+                } else if (chartState.city) {
+                    chartState.state = false;
+                    chartState.county = true;
+                    chartState.city = false;
+                    chartState.property = false;
+
+                    // change charge's data and redraw
+                    chart.setDataTable(viewCounty);
+                    chart.draw();
+                } else if (chartState.property) {
+                    chartState.state = false;
+                    chartState.county = false;
+                    chartState.city = true;
+                    chartState.property = false;
+
+                    // change charge's data and redraw
+                    chart.setDataTable(viewCity);
+                    chart.draw();
+                }
+            }
+        });
+    }
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>State/County Score & Next Inspection Date Viewer</h1>
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="chart_div" style="height: 600px;"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <button id="drillup_button" style="width:90%; display:block; margin: auto;">Drill Up</button>
+            </div>
+        </div>
+    </div>
+    
+    
+</body>
+
+</html>

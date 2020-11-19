@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Load the AJAX API-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', { 'packages': ['geochart', 'table'] });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        $.when($.ajax({
+                dataType: "json", // get scores for all states (part of query 1)
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B+%0D%0A++++%7B%0D%0A++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.%0D%0A++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.+%0D%0A++++%7D%0D%0A++++UNION%0D%0A++++%7B%0D%0A++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.%0D%0A++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.+%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A++++%23+FILTER+REGEX%28%3Fstate%2C+%22CA%7CTX%7CNY%22%29+%23+use+to+filter+states+%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate%0D%0AORDER+BY+%3Fstate&output=json',
+            }),
+            $.ajax({
+                dataType: "json", // get scores for all states (part of query 1)
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%3Fcity+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%3Finspection_score%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate+%3Fcity%0D%0AHAVING+%28COUNT%28%2A%29+%3E+10%29%0D%0AORDER+BY+%3Fstate+DESC%28%3Fscore%29&output=json',
+            }),
+            $.ajax({
+                dataType: "json", // get scores for all states (part of query 1)
+                url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0ASELECT+%3Fstate+%3Fcounty+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E%0D%0AWHERE%0D%0A%7B%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty%29+%3Finspection_score%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.+%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.+++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.+%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.+++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D.%0D%0A++++FILTER+REGEX%28%3Fstate%2C+%22%28%3F%3D%5E%28%3F%21GU%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21PR%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21MP%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21VI%24%29.%2A%24%29%28%3F%3D%5E%28%3F%21DC%24%29.%2A%24%29%22%29.%0D%0A%7D+%0D%0AGROUP+BY+%3Fstate+%3Fcounty%0D%0AHAVING+%28COUNT%28%2A%29+%3E+10%29%0D%0AORDER+BY+%3Fstate+DESC%28%3Fscore%29&output=json',
+            })).then(function(json, jsonCity, jsonCounty) {
+
+            // define datatables
+            var dataState = new google.visualization.DataTable();
+            dataState.addColumn('string', 'State');
+            dataState.addColumn('number', 'Score');
+            var dataCityTop = new google.visualization.DataTable();
+            dataCityTop.addColumn('string', 'State');
+            dataCityTop.addColumn('string', 'City');
+            dataCityTop.addColumn('number', 'Score');
+            var dataCityBottom = new google.visualization.DataTable();
+            dataCityBottom.addColumn('string', 'State');
+            dataCityBottom.addColumn('string', 'City');
+            dataCityBottom.addColumn('number', 'Score');
+            var dataCountyTop = new google.visualization.DataTable();
+            dataCountyTop.addColumn('string', 'State');
+            dataCountyTop.addColumn('string', 'County');
+            dataCountyTop.addColumn('number', 'Score');
+            var dataCountyBottom = new google.visualization.DataTable();
+            dataCountyBottom.addColumn('string', 'State');
+            dataCountyBottom.addColumn('string', 'County');
+            dataCountyBottom.addColumn('number', 'Score');
+            var dataAcceptableCities = new google.visualization.DataTable();
+            dataAcceptableCities.addColumn('string', 'State');
+            dataAcceptableCities.addColumn('string', 'City');
+            dataAcceptableCities.addColumn('number', 'Score');
+
+            // populate datatables
+            json[0].results.bindings.forEach(function(entry) {
+                dataState.addRow([entry.state.value, parseFloat(entry.score.value)]);
+            });
+            jsonCity[0].results.bindings.forEach(function(entry) {
+                dataCityTop.addRow([entry.state.value, entry.city.value, parseFloat(entry.score.value)]);
+            });
+            jsonCity[0].results.bindings.reverse().forEach(function(entry) {
+                dataCityBottom.addRow([entry.state.value, entry.city.value, parseFloat(entry.score.value)]);
+            });
+            jsonCounty[0].results.bindings.forEach(function(entry) {
+                dataCountyTop.addRow([entry.state.value, entry.county.value, parseFloat(entry.score.value)]);
+            });
+            jsonCounty[0].results.bindings.reverse().forEach(function(entry) {
+                dataCountyBottom.addRow([entry.state.value, entry.county.value, parseFloat(entry.score.value)]);
+            });
+            jsonCity[0].results.bindings.reverse().forEach(function(entry) {
+                dataAcceptableCities.addRow([entry.state.value, entry.city.value, parseFloat(entry.score.value)]);
+            });
+
+            // set up dataviews
+            var viewState = new google.visualization.DataView(dataState);
+            var viewCountyTop = new google.visualization.DataView(dataCountyTop);
+            var viewCountyBottom = new google.visualization.DataView(dataCountyBottom);
+            var viewCityTop = new google.visualization.DataView(dataCityTop);
+            var viewCityBottom = new google.visualization.DataView(dataCityBottom);
+            var viewAcceptableCities = new google.visualization.DataView(dataAcceptableCities);
+            viewCityTop.setColumns([1, 2]);
+            viewCityBottom.setColumns([1, 2]);
+            viewCountyTop.setColumns([1, 2]);
+            viewCountyBottom.setColumns([1, 2]);
+            viewAcceptableCities.setColumns([1, 2]);
+            viewCityTop.setRows([]);
+            viewCityBottom.setRows([]);
+            viewCountyTop.setRows([]);
+            viewCountyBottom.setRows([]);
+            viewAcceptableCities.setRows([]);
+
+            // define charts
+            var geoChart = new google.visualization.ChartWrapper({
+                chartType: 'GeoChart',
+                dataTable: viewState,
+                options: {
+                    region: 'US',
+                    displayMode: 'regions',
+                    resolution: 'provinces',
+                    colorAxis: { colors: ['blue'] },
+                },
+                containerId: 'geochart'
+            });
+            var topCitiesChart = new google.visualization.ChartWrapper({
+                chartType: 'Table',
+                dataTable: viewCityTop,
+                options: { width: '100%' },
+                containerId: 'tablechart'
+            });
+            var bottomCitiesChart = new google.visualization.ChartWrapper({
+                chartType: 'Table',
+                dataTable: viewCityBottom,
+                options: { width: '100%' },
+                containerId: 'bottomcitiestablechart'
+            });
+            var topCountiesChart = new google.visualization.ChartWrapper({
+                chartType: 'Table',
+                dataTable: viewCountyTop,
+                options: { width: '100%' },
+                containerId: 'topCountiesTableChart'
+            });
+            var bottomCountiesChart = new google.visualization.ChartWrapper({
+                chartType: 'Table',
+                dataTable: viewCountyBottom,
+                options: { width: '100%' },
+                containerId: 'bottomCountiesTableChart'
+            });
+            var acceptableCitiesChart = new google.visualization.ChartWrapper({
+                chartType: 'Table',
+                dataTable: viewAcceptableCities,
+                options: { height: 150, width: '100%' },
+                containerId: 'acceptableCitiesTableChart'
+            });
+
+            // draw charts
+            geoChart.draw();
+            topCitiesChart.draw();
+            bottomCitiesChart.draw();
+            topCountiesChart.draw();
+            bottomCountiesChart.draw();
+            acceptableCitiesChart.draw();
+
+            // add event listener to geochart
+            google.visualization.events.addListener(geoChart, 'select', selectHandler);
+
+            // event handler for geochart
+            function selectHandler() {
+                if (geoChart.getChart().getSelection().length > 0) {
+
+                    // get selection
+                    var selection = dataState.getFormattedValue(geoChart.getChart().getSelection()[0].row, 0);
+
+                    // filter cities
+                    var cityCounterTop = 0;
+                    viewCityTop.setColumns([0, 1, 2]);
+                    viewCityTop.setRows(dataCityTop.getFilteredRows([{
+                        column: 0,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value == selection) {
+                                if (cityCounterTop < 5) {
+                                    cityCounterTop++;
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    }]));
+                    viewCityTop.setColumns([1, 2]);
+
+                    var cityCounterBottom = 0;
+                    viewCityBottom.setColumns([0, 1, 2]);
+                    viewCityBottom.setRows(dataCityBottom.getFilteredRows([{
+                        column: 0,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value == selection) {
+                                if (cityCounterBottom < 5) {
+                                    cityCounterBottom++;
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    }]));
+                    viewCityBottom.setColumns([1, 2]);
+
+
+                    // filter counties
+                    var countyCounterTop = 0;
+                    viewCountyTop.setColumns([0, 1, 2]);
+                    viewCountyTop.setRows(dataCountyTop.getFilteredRows([{
+                        column: 0,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value == selection) {
+                                if (countyCounterTop < 5) {
+                                    countyCounterTop++;
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    }]));
+                    viewCountyTop.setColumns([1, 2]);
+
+                    var countyCounterBottom = 0;
+                    viewCountyBottom.setColumns([0, 1, 2]);
+                    viewCountyBottom.setRows(dataCountyBottom.getFilteredRows([{
+                        column: 0,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value == selection) {
+                                if (countyCounterBottom < 5) {
+                                    countyCounterBottom++;
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    }]));
+                    viewCountyBottom.setColumns([1, 2]);
+
+                    viewAcceptableCities.setColumns([0, 1, 2]);
+                    viewAcceptableCities.setRows(dataAcceptableCities.getFilteredRows([{
+                        column: 0,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value == selection) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    }, {
+                        column: 2,
+                        test: (value, rowId, columnId, datatable) => {
+                            if (value >= 80) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    }]));
+                    viewAcceptableCities.setColumns([1, 2]);
+
+                    // redraw charts
+                    topCitiesChart.draw();
+                    bottomCitiesChart.draw();
+                    topCountiesChart.draw();
+                    bottomCountiesChart.draw();
+                    acceptableCitiesChart.draw();
+                }
+            }
+        });
+    }
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>U.S. Map of All Housing Inspection Scores</h1>
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-sm-12" st>
+                <div id="geochart" style="height: 400px;"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class='text-center'>
+                    <h5>Top 5 Cities</h5>
+                </div>
+                <div id="tablechart"></div>
+            </div>
+            <div class="col-sm-3">
+                <div class='text-center'>
+                    <h5>Bottom 5 Cities</h5>
+                </div>
+                <div id="bottomcitiestablechart"></div>
+            </div>
+            <div class="col-sm-3">
+                <div class='text-center'>
+                    <h5>Top 5 Counties</h5>
+                </div>
+                <div id="topCountiesTableChart"></div>
+            </div>
+            <div class="col-sm-3">
+                <div class='text-center'>
+                    <h5>Bottom 5 Cities</h5>
+                </div>
+                <div id="bottomCountiesTableChart"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class='text-center'>
+                    <h5>Cities With Acceptable Average Scores</h5>
+                </div>
+                <div id="acceptableCitiesTableChart"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

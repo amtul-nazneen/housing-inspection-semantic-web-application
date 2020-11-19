@@ -1,0 +1,265 @@
+<html>
+   <head>
+      <title>HIA -Top States</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"-->
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script-->
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
+	     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <script type="text/javascript">
+         google.charts.load('current', {packages: ['corechart', 'bar']});
+         google.charts.setOnLoadCallback(drawBasic);
+         
+         function drawBasic() {
+         $.when($.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E++%0D%0AWHERE%7B++%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D%0D%0A%7D++%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+DESC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  }),$.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E++%0D%0AWHERE%7B++%0D%0A++++%7B%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++%7D%0D%0A++++++++++++UNION%0D%0A++++++++++++%7B%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs2+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++++++%7D%0D%0A++++++++%7D%0D%0A++++%7D%0D%0A%7D++%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+ASC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  }),$.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E++%0D%0AWHERE%7B++%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++%7D%0D%0A++++%7D%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+DESC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  }),$.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1259%3E++%0D%0AWHERE%7B++%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1259%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++%7D%0D%0A++++%7D%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+ASC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  }),$.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E++%0D%0AWHERE%7B++%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++%7D%0D%0A++++%7D%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+DESC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  }),$.ajax({
+                      dataType: "json",
+                      url: 'http://localhost:3030/myDataset?query=PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E++%0D%0ASELECT+%3Fstate_name+%28COUNT%28%2A%29+AS+%3Fhowmany%29+%28AVG%28xsd%3Afloat%28%3Finspection_score%29%29+AS+%3Fscore%29++%0D%0AFROM+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2FDataset_1258%3E++%0D%0AWHERE%7B++%0D%0A++++++++SELECT+%3Fstate_name+%3Finspection_score+%28LCASE%28%3Fcity_mc%29+as+%3Fcity%29+%28LCASE%28%3Fcounty_name_mc%29+as+%3Fcounty_name%29%0D%0A++++++++WHERE%7B%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fstate_name%3E+%3Fstate_name.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Finspection_score%3E+%3Finspection_score.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcity%3E+%3Fcity_mc.++%0D%0A++++++++++++++++%3Fs1+%3Chttp%3A%2F%2Fdata-gov.tw.rpi.edu%2Fvocab%2Fp%2F1258%2Fcounty_name%3E+%3Fcounty_name_mc.++%0D%0A++++++++%7D%0D%0A++++%7D%0D%0AGROUP+BY+%3Fstate_name+%0D%0AHAVING+%28%3Fhowmany+%3E%3D+100%29%0D%0AORDER+BY+ASC%28%3Fscore%29%0D%0ALIMIT+5&output=json',
+                  })).then(function ( json1,json2,json3,json4,json5,json6 ) {
+				  var stateMap = new Map();
+				  stateMap.set("AL","Alabama");
+stateMap.set("AK","Alaska");
+stateMap.set("AZ","Arizona");
+stateMap.set("AR","Arkansas");
+stateMap.set("CA","California");
+stateMap.set("CO","Colorado");
+stateMap.set("CT","Connecticut");
+stateMap.set("DE","Delaware");
+stateMap.set("DC","District of Columbia");
+stateMap.set("FL","Florida");
+stateMap.set("GA","Georgia");
+stateMap.set("HI","Hawaii");
+stateMap.set("ID","Idaho");
+stateMap.set("IL","Illinois");
+stateMap.set("IN","Indiana");
+stateMap.set("IA","Iowa");
+stateMap.set("KS","Kansas");
+stateMap.set("KY","Kentucky");
+stateMap.set("LA","Louisiana");
+stateMap.set("ME","Maine");
+stateMap.set("MD","Maryland");
+stateMap.set("MA","Massachusetts");
+stateMap.set("MI","Michigan");
+stateMap.set("MN","Minnesota");
+stateMap.set("MS","Mississippi");
+stateMap.set("MO","Missouri");
+stateMap.set("MT","Montana");
+stateMap.set("NE","Nebraska");
+stateMap.set("NV","Nevada");
+stateMap.set("NH","New Hampshire");
+stateMap.set("NJ","New Jersey");
+stateMap.set("NM","New Mexico");
+stateMap.set("NY","New York");
+stateMap.set("NC","North Carolina");
+stateMap.set("ND","North Dakota");
+stateMap.set("OH","Ohio");
+stateMap.set("OK","Oklahoma");
+stateMap.set("OR","Oregon");
+stateMap.set("PA","Pennsylvania");
+stateMap.set("RI","Rhode Island");
+stateMap.set("SC","South Carolina");
+stateMap.set("SD","South Dakota");
+stateMap.set("TN","Tennessee");
+stateMap.set("TX","Texas");
+stateMap.set("UT","Utah");
+stateMap.set("VT","Vermont");
+stateMap.set("VA","Virginia");
+stateMap.set("WA","Washington");
+stateMap.set("WV","West Virginia");
+stateMap.set("WI","Wisconsin");
+stateMap.set("WY","Wyoming");
+stateMap.set("PR","Puerto Rico");
+
+                      var data1 = new google.visualization.DataTable();
+                      data1.addColumn('string', 'Housing Type');
+                      data1.addColumn('number', 'Avg. Inspection Scores');
+          
+          var data2 = new google.visualization.DataTable();
+                      data2.addColumn('string', 'Housing Type');
+                      data2.addColumn('number', 'Avg. Inspection Scores');
+          
+          var data3 = new google.visualization.DataTable();
+                      data3.addColumn('string', 'Housing Type');
+                      data3.addColumn('number', 'Avg. Inspection Scores');
+          
+                      var data4 = new google.visualization.DataTable();
+                      data4.addColumn('string', 'Housing Type');
+                      data4.addColumn('number', 'Avg. Inspection Scores');
+          
+          var data5 = new google.visualization.DataTable();
+                      data5.addColumn('string', 'Housing Type');
+                      data5.addColumn('number', 'Avg. Inspection Scores');
+          
+          var data6 = new google.visualization.DataTable();
+                      data6.addColumn('string', 'Housing Type');
+                      data6.addColumn('number', 'Avg. Inspection Scores');
+            
+         json1[0].results.bindings.forEach(function(entry) {
+                        data1.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+            
+                    json2[0].results.bindings.forEach(function(entry) {
+                       data2.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+         
+                    json3[0].results.bindings.forEach(function(entry) {
+                       data3.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+         
+                    json4[0].results.bindings.forEach(function(entry) {
+                       data4.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+         
+                    json5[0].results.bindings.forEach(function(entry) {
+                       data5.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+         
+                    json6[0].results.bindings.forEach(function(entry) {
+                       data6.addRow([stateMap.get(entry.state_name.value), parseFloat(entry.score.value)]);
+                    });
+         var options1 = {
+           title: 'Top 5 States - Highest Inspection Score Overall',
+           chartArea: {width: '50%'}, colors: ['#B276B2'], is3D:true,
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+		 
+         var options2 = {
+           title: 'Top 5 States - Lowest Inspection Score Overall',
+           chartArea: {width: '50%'}, colors: ['#B276B2'],
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+		 
+         var options3 = {
+           title: 'Top 5 States - Highest Inspection Score Public Housing',
+           chartArea: {width: '50%'}, colors: ['#60BD68'],
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+         var options4 = {
+           title: 'Top 5 States - Lowest Inspection Score Public Housing',
+           chartArea: {width: '50%'}, colors: ['#60BD68'],
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+         var options5 = {
+           title: 'Top 5 States - Highest Inspection Score Multifamily Housing',
+           chartArea: {width: '50%'}, colors: ['#F15854'],
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+         var options6 = {
+           title: 'Top 5 States - Lowest Inspection Score Multifamily Housing',
+           chartArea: {width: '50%'}, colors: ['#F15854'],
+           hAxis: {
+             title: '',
+             minValue: 60
+           },
+           vAxis: {
+             title: ''
+           }
+         };
+         
+         
+         var chart1 = new google.visualization.BarChart(document.getElementById('chart1'));
+         chart1.draw(data1, options1);
+         
+         var chart2 = new google.visualization.BarChart(document.getElementById('chart2'));
+         chart2.draw(data2, options2);
+         
+         var chart3 = new google.visualization.BarChart(document.getElementById('chart3'));
+         chart3.draw(data3, options3);
+         
+         var chart4 = new google.visualization.BarChart(document.getElementById('chart4'));
+         chart4.draw(data4, options4);
+         
+         var chart5 = new google.visualization.BarChart(document.getElementById('chart5'));
+         chart5.draw(data5, options5);
+         
+         var chart6 = new google.visualization.BarChart(document.getElementById('chart6'));
+         chart6.draw(data6, options6);
+                  
+                  });
+         }
+      </script>
+   </head>
+   <body>
+      <div class="container-fluid">
+	  <div class="page-header">
+    <h1>Top States and Inspection Scores</h1> 
+<hr/>	
+  </div>
+	         <div class="row">
+	            <div class="col-sm-6" >
+				<div id="chart1"></div>
+	            </div>
+	            <div class="col-sm-6" >
+	               <div id="chart2"></div>
+	            </div>
+	         </div>
+	         <div class="row">
+	            <div class="col-sm-6" >
+				<div id="chart3"></div>
+	            </div>
+	            <div class="col-sm-6" >
+	               <div id="chart4"></div>
+	            </div>
+	         </div>
+			 <div class="row">
+	            <div class="col-sm-6" >
+				<div id="chart5"></div>
+	            </div>
+	            <div class="col-sm-6" >
+	               <div id="chart6"></div>
+	            </div>
+	         </div>
+			 </div>
+   </body>
+</html>
