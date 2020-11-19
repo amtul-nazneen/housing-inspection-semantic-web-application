@@ -1,4 +1,4 @@
-# semantic-web-application
+# Housing Inspection Explorer
 Building a Web Application based on Semantic Data
 
 # Steps to Run
